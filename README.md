@@ -10,6 +10,7 @@ Here's a breakdown of the key files in this repository:
 
 * **`data/`**: This directory contains the dataset used for training and evaluating the hate detection models (it is a link to a drive folder due to memory issues).
 * **`.gitignore`**: Specifies intentionally untracked files that Git ignores once code has been runned (`data/`, `models/` and `results/`).
+* **`requirements.txt`**: Contains all dependencies needed to reproduce findings by authors.
 * **`data_exploration.py`**: A Python script for initial data analysis and exploration. It outputs the final processed and balanced dataset used for all downstream analyses. 
 * **`run_distilbert_seeds.py`**: Script for running hate detection experiments using the DistilBERT model, with different random seeds for reproducibility.
 * **`run_gemma.ipynb`**: A Jupyter Notebook for experiments involving the Gemma model, using the same seeds. 

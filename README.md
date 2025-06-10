@@ -23,8 +23,8 @@ To get started with this project, you'll need to:
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
+    git clone [https://github.com/jonlecumberri/deep_learning_project.git](https://github.com/jonlecumberri/deep_learning_project.git)  
+    cd deep_learning_project
     ```
 2.  **Set up your environment:** Install the necessary Python packages. A `requirements.txt` file is usually included for this purpose (though not visible in the screenshot, it's a common practice).
     ```bash

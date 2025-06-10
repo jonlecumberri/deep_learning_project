@@ -137,6 +137,9 @@ for seed in SEEDS:
         "f1_NoHate": report["NoHate"]["f1-score"] }])
     metrics_df.to_csv(os.path.join(seed_dir, "few_shot_metrics.csv"), index=False)
 
+# ===========================
+# Aggregate Results
+# ===========================
 
 all_df = pd.DataFrame(all_metrics)
 agg = all_df[["eval_accuracy", "eval_f1_Hate", "eval_f1_NoHate"]].agg(["mean", "std", "var"])

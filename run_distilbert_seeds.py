@@ -36,7 +36,7 @@ class HateSpeechDataset(Dataset):
         return item
 
 for seed in SEEDS:
-    print(f"\n=== 🔁 Running for SEED {seed} ===")
+    print(f"\n===Running for SEED {seed} ===")
 
     RESULTS_DIR = os.path.join(FINAL_RESULTS_DIR, f"results_seed{seed}")
     MODEL_DIR = os.path.join(MODEL_BASE_DIR, f"model_seed{seed}")
@@ -167,4 +167,4 @@ df_all = pd.DataFrame(all_metrics)
 agg = df_all[["eval_accuracy", "eval_f1_Hate", "eval_f1_NoHate"]].agg(["mean", "std", "var"])
 agg.to_csv(os.path.join(FINAL_RESULTS_DIR, "final_summary.csv"))
 
-print("\n🏁 All seeds completed. Aggregated results saved to `results_distilbert_seeds/final_summary.csv`.")
+print("\nAll seeds completed. Aggregated results saved to `results_distilbert_seeds/final_summary.csv`.")

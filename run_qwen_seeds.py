@@ -165,7 +165,9 @@ for seed in SEEDS:
     model.save_pretrained(MODEL_DIR)
     tokenizer.save_pretrained(MODEL_DIR)
 
-
+# ===========================
+# Aggregate Results
+# ===========================
 
 df_all = pd.DataFrame(all_metrics)
 agg = df_all[["eval_accuracy", "eval_f1_Hate", "eval_f1_NoHate"]].agg(["mean", "std", "var"])

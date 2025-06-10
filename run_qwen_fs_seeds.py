@@ -43,7 +43,7 @@ model.eval()
 
 def run_prompt_inference(df, model, tokenizer, instruction):
     results = []
-    print(f"\n🚀 Running few-shot inference on {len(df)} samples...")
+    print(f"\nRunning few-shot inference on {len(df)} samples...")
 
     for i, row in tqdm(df.iterrows(), total=len(df), desc="Predicting"):
         text = row["text"]
@@ -93,7 +93,7 @@ def run_prompt_inference(df, model, tokenizer, instruction):
 # ===========================
 
 for seed in SEEDS:
-    print(f"\n=== 🔁 Few-shot for SEED {seed} ===")
+    print(f"\n===Few-shot for SEED {seed} ===")
     seed_dir = os.path.join(FINAL_RESULTS_DIR, f"results_seed{seed}")
     os.makedirs(seed_dir, exist_ok=True)
 
@@ -147,4 +147,4 @@ df_all = pd.DataFrame(all_metrics)
 agg = df_all[["eval_accuracy", "eval_f1_Hate", "eval_f1_NoHate"]].agg(["mean", "std", "var"])
 agg.to_csv(os.path.join(FINAL_RESULTS_DIR, "final_summary.csv"))
 
-print("\n🏁 All few-shot seeds completed. Aggregated results saved to `results_qwen_chat_fewshot_seeds/final_summary.csv`.")
+print("\nAll few-shot seeds completed. Aggregated results saved to `results_qwen_chat_fewshot_seeds/final_summary.csv`.")

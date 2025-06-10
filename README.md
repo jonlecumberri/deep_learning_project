@@ -1,23 +1,25 @@
 # From BERT to Qwen: Hate Detection across architectures
 
-This repository contains code and data related to hate speech detection, exploring various model architectures including BERT, DistilBERT, Roberta, Gemma, and Qwen.
+This repository contains code and data related to the completion of the group project of EE-559 Course Deep Learning at EPFL.
+
+Authors: Ariadna Mon Gomis, Saúl Fenollosa Arguedas, Jon Lecumberri Arteta.
 
 ## Files
 
 Here's a breakdown of the key files in this repository:
 
-* **`data/`**: This directory likely contains the dataset used for training and evaluating the hate detection models.
-* **`.gitignore`**: Specifies intentionally untracked files that Git should ignore.
-* **`data_exploration.py`**: A Python script for initial data analysis and exploration.
-* **`run_distilbert_seeds.py`**: Script for running hate detection experiments using the DistilBERT model, likely with different random seeds for reproducibility.
-* **`run_gemma.ipynb`**: A Jupyter Notebook for experiments involving the Gemma model.
-* **`run_qwen_ft_seeds.py`**: Script for running hate detection experiments using the Qwen model, specifically focusing on fine-tuning, and likely with different random seeds.
-* **`run_qwen_seeds.py`**: Script for running hate detection experiments using the Qwen model, likely with different random seeds.
-* **`run_roberta_seeds.py`**: Script for running hate detection experiments using the Roberta model, likely with different random seeds.
+* **`data/`**: This directory contains the dataset used for training and evaluating the hate detection models (it is a link to a drive folder due to memory issues).
+* **`.gitignore`**: Specifies intentionally untracked files that Git ignores once code has been runned (`data/`, `models/` and `results/`).
+* **`data_exploration.py`**: A Python script for initial data analysis and exploration. It outputs the final processed and balanced dataset used for all downstream analyses. 
+* **`run_distilbert_seeds.py`**: Script for running hate detection experiments using the DistilBERT model, with different random seeds for reproducibility.
+* **`run_gemma.ipynb`**: A Jupyter Notebook for experiments involving the Gemma model, using the same seeds. 
+* **`run_qwen_ft_seeds.py`**: Script for running hate detection experiments using the Qwen model, specifically focusing on fine-tuning, and with the same seeds.
+* **`run_qwen_seeds.py`**: Script for running hate detection experiments using the Qwen model, and with the same seeds.
+* **`run_roberta_seeds.py`**: Script for running hate detection experiments using the Roberta model, and with the same seeds.
 
 ## Getting Started
 
-To get started with this project, you'll typically need to:
+To get started with this project, you'll need to:
 
 1.  **Clone the repository:**
     ```bash

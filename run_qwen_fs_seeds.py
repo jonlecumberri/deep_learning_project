@@ -9,9 +9,6 @@ from transformers import logging
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
 
-# ===========================
-# Setup
-# ===========================
 
 BASE_DIR = os.environ.get("HOME", os.getcwd())
 DATA_PATH = os.path.join(BASE_DIR, "DeepLearning/project/deep_learning_project/data", "data_huang_devansh_processed_equal.csv")
@@ -21,31 +18,22 @@ os.makedirs(FINAL_RESULTS_DIR, exist_ok=True)
 SEEDS = [42, 123, 456, 789, 101112]
 all_metrics = []
 
-# ===========================
-# Suppress Warnings
-# ===========================
 
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 logging.set_verbosity_error()
 
-# ===========================
-# Load Model
-# ===========================
 
 model_name = "Qwen/Qwen1.5-0.5B-Chat"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True).cuda()
 model.eval()
 
-# ===========================
-# Inference Function
-# ===========================
 
 def run_prompt_inference(df, model, tokenizer, instruction):
     results = []
     print(f"\nRunning few-shot inference on {len(df)} samples...")
 
-    for i, row in tqdm(df.iterrows(), total=len(df), desc="Predicting"):
+    for _, row in tqdm(df.iterrows(), total=len(df), desc="Predicting"):
         text = row["text"]
         gold_label = int(row["label"])
         gold_str = "Hate" if gold_label == 1 else "NoHate"
@@ -53,6 +41,7 @@ def run_prompt_inference(df, model, tokenizer, instruction):
         prompt = instruction + f"{text}\nAnswer:"
         input_ids = tokenizer(prompt, return_tensors="pt").input_ids.cuda()
 
+        # Fallback if prompt too long
         if input_ids.shape[1] > 2000:
             prompt = (
                 "You are a content moderation assistant. Classify the following text as Hate (1) or No Hate (0). "
@@ -88,16 +77,12 @@ def run_prompt_inference(df, model, tokenizer, instruction):
 
     return pd.DataFrame(results)
 
-# ===========================
-# Loop Over Seeds
-# ===========================
 
 for seed in SEEDS:
-    print(f"\n===Few-shot for SEED {seed} ===")
+    print(f"\n===Few-shot for SEED {seed} ==="@)
     seed_dir = os.path.join(FINAL_RESULTS_DIR, f"results_seed{seed}")
     os.makedirs(seed_dir, exist_ok=True)
 
-    # Load and sample data
     raw_rows = []
     with open(DATA_PATH, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f, quoting=csv.QUOTE_NONE)
@@ -109,7 +94,6 @@ for seed in SEEDS:
     df = pd.DataFrame(raw_rows, columns=["text", "label"])
     df = df.sample(frac=1, random_state=seed).reset_index(drop=True).head(100000)
 
-    # Build few-shot prompt
     hate_examples = df[df["label"] == 1].head(3).reset_index(drop=True)
     nohate_examples = df[df["label"] == 0].head(3).reset_index(drop=True)
     shot_rows = pd.concat([hate_examples, nohate_examples]).sample(frac=1, random_state=123).reset_index(drop=True)
@@ -122,13 +106,24 @@ for seed in SEEDS:
         instruction += f"Example {idx}:\n{row.text}\n{label_text}\n"
     instruction += "Now classify:\n"
 
-    # Sample data for evaluation
     eval_df = df.sample(n=100, random_state=seed)
     few_shot_df = run_prompt_inference(eval_df, model, tokenizer, instruction)
+
+
+    print(f"\nSample inferences for SEED {seed}:")
+    for idx, row in few_shot_df.head(5).iterrows():
+        text_preview = row['text'][:100] + ('...' if len(row['text']) > 100 else '')
+        print(f"{idx+1}. Text: {text_preview}")
+        print(f"   Gold Label: {row['gold_str']} | Predicted: {row['pred_label']}")
+        print()
+
     few_shot_df.to_csv(os.path.join(seed_dir, "few_shot_predictions.csv"), index=False)
 
     acc = accuracy_score(few_shot_df["gold_label"], few_shot_df["pred_num"])
-    report = classification_report(few_shot_df["gold_label"], few_shot_df["pred_num"], target_names=["NoHate", "Hate"], output_dict=True, zero_division=0)
+    report = classification_report(
+        few_shot_df["gold_label"], few_shot_df["pred_num"],
+        target_names=["NoHate", "Hate"], output_dict=True, zero_division=0
+    )
     all_metrics.append({
         "seed": seed,
         "eval_accuracy": acc,
@@ -136,15 +131,15 @@ for seed in SEEDS:
         "eval_f1_NoHate": report["NoHate"]["f1-score"]
     })
 
-    metrics_df = pd.DataFrame([{ "accuracy": acc, "f1_Hate": report["Hate"]["f1-score"], "f1_NoHate": report["NoHate"]["f1-score"] }])
+    metrics_df = pd.DataFrame([{ 
+        "accuracy": acc, 
+        "f1_Hate": report["Hate"]["f1-score"], 
+        "f1_NoHate": report["NoHate"]["f1-score"] }])
     metrics_df.to_csv(os.path.join(seed_dir, "few_shot_metrics.csv"), index=False)
 
-# ===========================
-# Aggregate Results
-# ===========================
 
-df_all = pd.DataFrame(all_metrics)
-agg = df_all[["eval_accuracy", "eval_f1_Hate", "eval_f1_NoHate"]].agg(["mean", "std", "var"])
+all_df = pd.DataFrame(all_metrics)
+agg = all_df[["eval_accuracy", "eval_f1_Hate", "eval_f1_NoHate"]].agg(["mean", "std", "var"])
 agg.to_csv(os.path.join(FINAL_RESULTS_DIR, "final_summary.csv"))
 
 print("\nAll few-shot seeds completed. Aggregated results saved to `results_qwen_chat_fewshot_seeds/final_summary.csv`.")

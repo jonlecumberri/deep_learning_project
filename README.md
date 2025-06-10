@@ -1,39 +1,68 @@
-# From BERT to Qwen: Hate Detection across architectures
+# From BERT to Qwen: Hate Detection across Architectures
 
-This repository contains code and data related to the completion of the group project of EE-559 Course Deep Learning at EPFL.
+This repository contains code and data for the **EE‑559 Deep Learning** group project at *EPFL*. The objective is to compare several language‑model architectures (BERT, DistilBERT, RoBERTa, Gemma, Qwen) on the task of **hate‑speech detection**.
 
-Authors: Ariadna Mon Gomis, Saúl Fenollosa Arguedas, Jon Lecumberri Arteta.
+Authors · *Ariadna Mon Gomis · Saúl Fenollosa Arguedas · Jon Lecumberri Arteta*
 
-## Files
+---
 
-Here's a breakdown of the key files in this repository:
+## Repository Layout
 
-* **`data/`**: This directory contains the dataset used for training and evaluating the hate detection models (it is a link to a drive folder due to memory issues).
-* **`.gitignore`**: Specifies intentionally untracked files that Git ignores once code has been runned (`data/`, `models/` and `results/`).
-* **`requirements.txt`**: Contains all dependencies needed to reproduce findings by authors.
-* **`data_exploration.py`**: A Python script for initial data analysis and exploration. It outputs the final processed and balanced dataset used for all downstream analyses. 
-* **`run_distilbert_seeds.py`**: Script for running hate detection experiments using the DistilBERT model, with different random seeds for reproducibility.
-* **`run_gemma.ipynb`**: A Jupyter Notebook for experiments involving the Gemma model, using the same seeds. 
-* **`run_qwen_ft_seeds.py`**: Script for running hate detection experiments using the Qwen model, specifically focusing on fine-tuning, and with the same seeds.
-* **`run_qwen_seeds.py`**: Script for running hate detection experiments using the Qwen model, and with the same seeds.
-* **`run_roberta_seeds.py`**: Script for running hate detection experiments using the Roberta model, and with the same seeds.
+| Path/File                                                                                                            | Purpose                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **`data/`**                                                                                                          | Link to the raw dataset (hosted on Google Drive due to size constraints).                                                       |
+| **`.gitignore`**                                                                                                     | Excludes generated artefacts (`data/`, `models/`, `results/`) from version control.                                             |
+| **`requirements.txt`**                                                                                               | **Only** the dependencies needed to run the *Python scripts* in this repo (everything ending in `.py`).                         |
+| **`data_exploration.py`**                                                                                            | Creates the processed & balanced dataset used by all downstream experiments.                                                    |
+| **`run_distilbert_seeds.py`**<br>**`run_qwen_seeds.py`**<br>**`run_qwen_ft_seeds.py`**<br>**`run_roberta_seeds.py`** | Command‑line entry points for the core experiments. Each script can be executed with multiple random seeds for reproducibility. |
+| **`run_gemma.ipynb`**                                                                                                | *Standalone* Colab notebook for Gemma experiments (see below).                                                                  |
 
-## Getting Started
+---
 
-To get started with this project, you'll need to:
+## Getting Started (Python Scripts)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/jonlecumberri/deep_learning_project.git](https://github.com/jonlecumberri/deep_learning_project.git)  
-    cd deep_learning_project
-    ```
-2.  **Set up your environment:** Install the necessary Python packages. A `requirements.txt` file is usually included for this purpose (though not visible in the screenshot, it's a common practice).
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  **Prepare your data:** Ensure the `data/` directory contains the appropriate dataset.
-4.  **Run experiments:** Execute the various `run_*.py` scripts or the Jupyter Notebooks to train and evaluate the models.
+> The steps below are **only** required if you plan to execute the `.py` experiment scripts locally. The Gemma notebook does **not** use this environment.
 
-## Project Goal
+1. **Clone the repository**
 
-The primary goal of this project is to compare the performance of different large language model (LLM) architectures (BERT, DistilBERT, Roberta, Gemma, Qwen) in the task of hate speech detection. By running experiments with various models and configurations, this research aims to identify which architectures are most effective for this challenging task.
+   ```bash
+   git clone https://github.com/jonlecumberri/deep_learning_project.git
+   cd deep_learning_project
+   ```
+2. **Create & activate an environment** (conda, venv, etc.)
+3. **Install dependencies for the `.py` scripts**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Prepare data** — ensure the `data/` symlink points to the dataset folder on Drive.
+5. **Run an experiment**
+
+   ```bash
+   python run_distilbert_seeds.py
+   # or
+   python run_roberta_seeds.py --seed 42
+   ```
+
+---
+
+## Running **Gemma** on Google Colab
+
+We encountered dependency conflicts when trying to run Gemma locally. To keep the repository lightweight and reproducible, Gemma experiments are shipped as a **Google Colab notebook** that relies on:
+
+* **[Unsloth](https://github.com/unslothai/unsloth)** — a lightweight wrapper around Hugging Face Transformers that simplifies LoRA fine‑tuning and enables *parallel inference* on Colab GPUs.
+* Colab’s managed CUDA & PyTorch stack (no manual installation needed).
+
+### Steps
+
+1. Open `run_gemma.ipynb` in Colab (via the *Open in Colab* badge or by uploading it directly).
+2. Run the first code cell — it installs Unsloth and pulls the Gemma checkpoints.
+3. Execute the remaining cells to reproduce our fine‑tuning and evaluation.
+
+> **Tip:** The notebook is self‑contained; you only need a Google account and a GPU‑enabled Colab runtime.
+
+---
+
+## Project Goal & Methodology
+
+The project benchmarks how architectural choices influence hate‑speech detection performance. Each model family is trained & evaluated under identical conditions (same splits, preprocessing pipeline, and random seeds). Metrics such as F1‑score, precision, and recall are logged to the `results/` folder for easy comparison.
